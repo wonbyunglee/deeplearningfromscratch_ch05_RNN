@@ -153,7 +153,7 @@ def main():
 
             tr_losses.append(loss.item())
 
-        # val loss
+        # val loss 
         yv_true, yv_pred = evaluate(model, val_loader, device)
         val_loss = float(np.mean((yv_true - yv_pred) ** 2))
 

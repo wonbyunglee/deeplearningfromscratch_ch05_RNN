@@ -1,7 +1,7 @@
 
 # MLB ERA Forecasting Practice (basic.csv) — PyTorch 버전
 
-## 파일 구조
+## 파일 구조 
 - `data_preprocess.py` : 데이터 로드/전처리 + (선수별) 시퀀스 샘플 생성
 - `models/`
   - `lstm.py` (PyTorch)

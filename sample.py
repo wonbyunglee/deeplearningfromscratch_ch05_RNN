@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import argparse
 import numpy as np
-import pandas as pd
+import pandas as pd 
 from sklearn.model_selection import train_test_split
 
 from data_preprocess import load_basic_csv, build_playerwise_dataset
