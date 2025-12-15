@@ -1,5 +1,7 @@
 
-# MLB ERA Forecasting Practice (basic.csv) — PyTorch 버전
+# Deep Learning from Scratch 2 Ch05 RNN (Baseball ERA Prediction with RNNs)
+
+![alt text](image.png)
 
 ## 파일 구조 
 - `data_preprocess.py` : 데이터 로드/전처리 + (선수별) 시퀀스 샘플 생성
