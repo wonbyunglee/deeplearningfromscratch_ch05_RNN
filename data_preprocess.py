@@ -32,21 +32,6 @@ class DatasetBundle:
     y_scaler: MinMaxScaler
 
 
-def load_basic_csv(csv_path: str) -> pd.DataFrame:
-    df = pd.read_csv(csv_path)
-
-    # 논문 코드에서 drop 했던 컬럼 (이름 컬럼은 모델 입력에 불필요)
-    if 'last_name, first_name' in df.columns:
-        df = df.drop(columns=['last_name, first_name'])
-
-    # 결측치는 0으로 채움
-    df = df.fillna(0)
-
-    # 정렬: 선수별/연도별 순서를 확실히 맞춰준다
-    df = df.sort_values(['player_id', 'year']).reset_index(drop=True)
-    return df
-
-
 def infer_feature_cols(df: pd.DataFrame, target_col: str = "p_era") -> List[str]:
     # player_id/year/target 제외
     return [c for c in df.columns if c not in ["player_id", "year", target_col]]
