@@ -27,8 +27,10 @@ MAX_SAMPLES = 20
 
 def load_basic_csv(csv_path: str) -> pd.DataFrame:
     df = pd.read_csv(csv_path)
-    df = df.drop(columns=['k_percent'])
-
+    ##############################################
+    #### 원하는 feature 추가/제거 해보기! ####
+    # df = df.drop(columns=['k_percent'])
+    ##############################################
 
     if 'last_name, first_name' in df.columns:
         df = df.drop(columns=['last_name, first_name'])
@@ -36,7 +38,7 @@ def load_basic_csv(csv_path: str) -> pd.DataFrame:
     # 결측치는 0으로 채움
     df = df.fillna(0)
     
-    print(f"[load_basic_csv] 선택된 변수들 ({len(df.columns)}):")
+    print(f"[선택된 변수들] ({len(df.columns)}):")
     for c in df.columns:
         print(f"  - {c}")
     print()
@@ -45,7 +47,7 @@ def load_basic_csv(csv_path: str) -> pd.DataFrame:
     df = df.sort_values(['player_id', 'year']).reset_index(drop=True)
     return df
 
-def split_keep_ids(X, y, player_ids, val_ratio=0.2, seed=42):
+def split_keep_ids(X, y, player_ids, val_ratio=0.2, seed=1):
     """train/val split 하면서 player_id도 같이 유지"""
     idx = np.arange(len(X))
     tr_idx, va_idx = train_test_split(
@@ -155,7 +157,7 @@ def main():
         "player_age",
     ]
 
-    print("<Sample>")
+    print("[샘플 데이터]")
     print(train_long[SHOW_COLS].head(30).to_string(index=False))
 
 
