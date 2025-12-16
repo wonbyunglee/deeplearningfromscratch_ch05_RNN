@@ -17,8 +17,8 @@ import pandas as pd
 from torch.utils.data import TensorDataset, DataLoader
 from sklearn.model_selection import train_test_split
 
-from data_preprocess import load_basic_csv, build_playerwise_dataset
-
+from data_preprocess import build_playerwise_dataset
+from sample import load_basic_csv
 
 def _build_model(model_name: str, input_size: int, hidden: int, layers: int, dropout: float) -> nn.Module:
     m = model_name.lower()
@@ -31,8 +31,16 @@ def _build_model(model_name: str, input_size: int, hidden: int, layers: int, dro
     if m == "gru":
         from models.gru import GRURegressor
         return GRURegressor(input_size=input_size, hidden_size=hidden, num_layers=layers, dropout=dropout)
+    if m == "simple_rnn":
+        from models.simple_rnn import SimpleRNNBookRegressor
+        return SimpleRNNBookRegressor(
+            input_size=input_size,
+            hidden_size=hidden,
+            dropout=dropout,
+            stateful=False)
+    
     raise ValueError(f"지원하지 않는 모델: {model_name} (lstm|bilstm|gru)")
-
+    
 
 def rmse(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     return float(np.sqrt(np.mean((y_true - y_pred) ** 2)))
@@ -61,7 +69,7 @@ def main():
     parser.add_argument("--csv_path", type=str, default="basic.csv", help="basic.csv 경로")
     parser.add_argument("--period", type=int, choices=[2019, 2023], default=2019, help="예측 타깃 연도")
     parser.add_argument("--seq_length", type=int, choices=[2, 3, 4], default=4, help="입력 시퀀스 길이(L)")
-    parser.add_argument("--model", type=str, choices=["lstm", "bilstm", "gru"], default="lstm", help="사용 모델")
+    parser.add_argument("--model", type=str, choices=["lstm", "bilstm", "gru", "simple_rnn"], default="lstm", help="사용 모델")
 
     # 학습 하이퍼파라미터(실습용)
     parser.add_argument("--epochs", type=int, default=200)
