@@ -77,6 +77,50 @@ python sample.py --period (2019 / 2023) --seq_length (2 / 3 / 4)
 - **[파싱 요약]** 에서 선택한 period, seq_length와 입력 년도, 전체 샘플 수, feature 개수 확인
 - **[샘플 데이터]** 에서 최종 데이터가 알맞은 period, seq_length 대로 파싱되었는지 확인
 
+## 2. 모델 학습 및 평가 (train_eval.py)
+### A. 모델 확인 (models/simple_rnn,lstm,gru,bilstm.py)
+
+- **Simple_RNN** (밑바닥2) : 기본적인 순환 신경망으로 과거 시계열 정보를 순차적으로 누적해 다음 시즌 ERA를 예측하는 가장 단순한 베이스라인 모델.
+
+- **LSTM** (Hochreiter & Schmidhuber, 1997) : 게이트 구조를 통해 장기 의존성을 효과적으로 학습하며, 과거 L년치 투수 기록을 요약해 ERA를 회귀 예측하는 모델.
+
+- **GRU** (Chung et al., 2014) : LSTM을 단순화한 구조로 reset·update gate만을 사용해 효율적으로 시계열 패턴을 학습하는 경량화된 RNN 모델.
+
+- **BiLSTM** (Schuster & Paliwal, 1997): 시계열을 정방향과 역방향으로 동시에 처리해 과거와 미래 문맥 정보를 함께 활용하여 ERA를 예측하는 양방향 LSTM 모델.
+
+### B. 모델 파라미터 설정
+- train_eval.py의 def main()에서 파라미터 설정 가능
+```
+def main():
+
+    ##### 원하는 파라미터 값 입력 #####
+    parser.add_argument("--epochs", type=int, default=200)
+    parser.add_argument("--batch_size", type=int, default=64)
+    parser.add_argument("--val_ratio", type=float, default=0.2)
+    parser.add_argument("--seed", type=int, default=1)
+
+    parser.add_argument("--hidden", type=int, default=128)
+    parser.add_argument("--layers", type=int, default=1)
+    parser.add_argument("--dropout", type=float, default=0.3)
+    parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument("--patience", type=int, default=20)
+
+    args = parser.parse_args()
+```
+
+| 파라미터           | 설명                        | 값을 늘리면                  | 값을 줄이면                  |
+| -------------- | ------------------------- | ----------------------- | ----------------------- |
+| `--epochs`     | 전체 학습 데이터를 반복 학습하는 횟수     | 더 충분한 학습 가능하나 과적합 위험 증가 | 학습 부족(underfitting) 가능  |
+| `--batch_size` | 한 번의 업데이트에 사용하는 샘플 수      | 학습이 안정적이나 메모리 사용량 증가    | 학습이 불안정해질 수 있으나 일반화에 도움 |
+| `--val_ratio`  | 검증 데이터로 분리할 비율            | 검증 신뢰도↑, 학습 데이터 감소      | 학습 데이터↑, 검증 성능 신뢰도↓     |
+| `--seed`       | 난수 시드(재현성 제어)             | 결과 자체는 변하지 않음           | 결과 자체는 변하지 않음           |
+| `--hidden`     | 은닉 상태 차원(모델 용량)           | 표현력↑, 과적합·연산량 증가        | 단순해져 복잡한 패턴 학습 어려움      |
+| `--layers`     | 순환 신경망 층 수                | 복잡한 시계열 패턴 학습 가능        | 학습은 안정적이나 표현력 제한        |
+| `--dropout`    | 드롭아웃 비율(정규화 강도)           | 과적합 감소, 학습 느려질 수 있음     | 과적합 위험 증가               |
+| `--lr`         | 학습률(업데이트 크기)              | 학습 불안정·발산 위험            | 학습 속도 매우 느려짐            |
+| `--patience`   | early stopping 대기 epoch 수 | 더 오래 학습, 과적합 가능         | 학습이 너무 빨리 종료될 수 있음      |
+
+
 ## 옵션 설명
 - `--period` : 예측하려는 타깃 연도(2019 또는 2023)
 - `--seq_length` : 타깃 연도 직전 L년치 기록을 입력으로 사용(2/3/4)
