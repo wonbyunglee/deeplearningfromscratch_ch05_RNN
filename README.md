@@ -5,6 +5,7 @@
 * Illustrated by DALL·E 4o
 
 ## 파일 구조 
+- `basic.csv` : 실습 데이터
 - `data_preprocess.py` : 데이터 로드/전처리 + (선수별) 시퀀스 샘플 생성
 - `models/`
   - `simple_rnn.py`
