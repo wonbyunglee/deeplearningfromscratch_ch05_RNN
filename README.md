@@ -90,6 +90,8 @@ python sample.py --period (2019 / 2023) --seq_length (2 / 3 / 4)
 
 ### B. 모델 파라미터 설정
 - train_eval.py의 def main()에서 파라미터 설정 가능
+
+  *원본 코드의 default 값이 통상적으로 쓰이는 값
 ```
 def main():
 
@@ -120,6 +122,75 @@ def main():
 | `--lr`         | 학습률(업데이트 크기)              | 학습 불안정·발산 위험            | 학습 속도 매우 느려짐            |
 | `--patience`   | early stopping 대기 epoch 수 | 더 오래 학습, 과적합 가능         | 학습이 너무 빨리 종료될 수 있음      |
 
+### C. 학습 및 평가 실행
+- terminal에서 train_eval 파일 실행
+- 실행창에서도 파라미터 설정 가능
+- ex) period : 2019, seq_length : 2, model : lstm, epochs : 300, batch_size : 128
+```
+python train_eval.py --period 2019 --seq_length 2 --model lstm --epochs 300 --batch_size 128
+```
+
+### D. 학습 결과 확인
+- **[데이터]** 에서 설정한 period, seq_length 및 모델 shape 확인, 선택한 모델 프레임워크 및 파라미터 확인
+```
+[데이터] period=2019, seq_length=2
+  - 샘플 수 N = 224
+  - 입력 shape = (224, 2, 26) (N, L, F)
+  - 타깃 shape = (224, 1) (N, 1)
+LSTMRegressor(
+  (lstm): LSTM(26, 128, batch_first=True)
+  (head): Sequential(
+    (0): Dropout(p=0.3, inplace=False)
+    (1): Linear(in_features=128, out_features=64, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.3, inplace=False)
+    (4): Linear(in_features=64, out_features=1, bias=True)
+  )
+)
+```
+- 모델 학습 과정 체크
+```
+Epoch 001 | train_mse=0.100043 | val_mse=0.085891
+Epoch 002 | train_mse=0.063051 | val_mse=0.061223
+Epoch 003 | train_mse=0.048184 | val_mse=0.041967
+Epoch 004 | train_mse=0.031839 | val_mse=0.031284
+Epoch 005 | train_mse=0.029095 | val_mse=0.033472
+.
+.
+[EarlyStopping] patience=20 도달 → 학습 종료
+```
+- validation 평가 지표 확인
+```
+[평가: Validation]
+  RMSE = 1.3794
+  MAE  = 1.0634
+  MAPE = 0.2408
+  ```
+- 모델이 예측한 output 샘플 20개 확인
+```
+[Validation Predictions]
+ sample  player_id  true  pred
+      0     518774  7.09  4.85
+      1     456701  4.57  5.87
+      2     502043  4.84  5.00
+      3     543037  2.50  3.72
+      4     502188  3.52  4.99
+      5     543243  2.87  4.35
+      6     501625  3.36  4.19
+      7     458708  3.74  5.18
+      8     502624  4.21  4.05
+      9     429719  9.58  4.92
+     10     593372  3.17  4.27
+     11     607074  5.19  4.56
+     12     592717  5.89  3.95
+     13     545333  4.48  3.51
+     14     543208  4.61  5.58
+     15     453562  4.64  4.42
+     16     594835  3.99  4.39
+     17     519242  4.40  2.92
+     18     542882  4.71  4.85
+     19     593576  2.93  4.39
+  ```
 
 ## 옵션 설명
 - `--period` : 예측하려는 타깃 연도(2019 또는 2023)
